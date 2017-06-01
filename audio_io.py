@@ -51,6 +51,12 @@ class AudioSignal:
 			sample_type=self.get_sample_type()
 		)
 
+	def get_length_in_seconds(self):
+		return float(self._data.shape[0]) / self.get_sample_rate()
+
+	def split(self, n_slices):
+		return [AudioSignal(s, self._sample_rate) for s in np.split(self._data, n_slices)]
+
 
 class AudioMixer:
 
