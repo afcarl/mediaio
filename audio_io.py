@@ -30,6 +30,9 @@ class AudioSignal:
 
 		return self._data[:, channel_index]
 
+	def get_number_of_samples(self):
+		return self._data.shape[0]
+
 	def get_number_of_channels(self):
 		# data shape: (n_samples) or (n_samples, n_channels)
 
@@ -56,6 +59,15 @@ class AudioSignal:
 
 	def split(self, n_slices):
 		return [AudioSignal(s, self._sample_rate) for s in np.split(self._data, n_slices)]
+
+	@staticmethod
+	def concat(signals):
+		for signal in signals:
+			if signal.get_format() != signals[0].get_format():
+				raise Exception("concating audio signals with different formats is not supported")
+
+		data = [signal.get_data() for signal in signals]
+		return AudioSignal(np.concatenate(data), signals[0].get_sample_rate())
 
 
 class AudioMixer:
