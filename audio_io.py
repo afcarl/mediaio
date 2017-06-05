@@ -55,10 +55,19 @@ class AudioSignal:
 		)
 
 	def get_length_in_seconds(self):
-		return float(self._data.shape[0]) / self.get_sample_rate()
+		return float(self.get_number_of_samples()) / self.get_sample_rate()
 
 	def split(self, n_slices):
 		return [AudioSignal(s, self._sample_rate) for s in np.split(self._data, n_slices)]
+
+	def slice(self, start_sample_index, end_sample_index):
+		return AudioSignal(self._data[start_sample_index:end_sample_index], self._sample_rate)
+
+	def pad_with_zeros(self, new_length):
+		new_shape = list(self._data.shape)
+		new_shape[0] = new_length
+
+		self._data.resize(new_shape)
 
 	@staticmethod
 	def concat(signals):
@@ -73,7 +82,7 @@ class AudioSignal:
 class AudioMixer:
 
 	@staticmethod
-	def mix(signals, mixing_weights):
+	def mix(signals, mixing_weights=[1, 1]):
 		reference_signal = signals[0]
 
 		mixed_data = np.zeros(shape=reference_signal.get_data().shape, dtype=float)
