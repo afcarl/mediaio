@@ -57,6 +57,15 @@ class AudioSignal:
 	def get_length_in_seconds(self):
 		return float(self.get_number_of_samples()) / self.get_sample_rate()
 
+	def set_sample_type(self, sample_type, equalize):
+		sample_type_info = np.iinfo(sample_type)
+
+		if equalize:
+			equalization_factor = float(sample_type_info.max) / np.abs(self._data).max()
+			self._data *= equalization_factor
+
+		self._data = self._data.clip(sample_type_info.min, sample_type_info.max).astype(sample_type)
+
 	def split(self, n_slices):
 		return [AudioSignal(s, self._sample_rate) for s in np.split(self._data, n_slices)]
 
@@ -82,17 +91,17 @@ class AudioSignal:
 class AudioMixer:
 
 	@staticmethod
-	def mix(signals, mixing_weights=[1, 1]):
-		reference_signal = signals[0]
+	def mix(audio_signals, mixing_weights=[1, 1]):
+		reference_signal = audio_signals[0]
 
 		mixed_data = np.zeros(shape=reference_signal.get_data().shape, dtype=float)
-		for i, signal in enumerate(signals):
+		for i, signal in enumerate(audio_signals):
 			if signal.get_format() != reference_signal.get_format():
 				raise Exception("mixing audio signals with different format is not supported")
 
 			mixed_data += (float(mixing_weights[i]) / sum(mixing_weights)) * signal.get_data()
 
-		sample_type = reference_signal.get_sample_type()
-		mixed_data = mixed_data.clip(np.iinfo(sample_type).min, np.iinfo(sample_type).max).astype(sample_type)
+		mixed_audio_signal = AudioSignal(mixed_data, reference_signal.get_sample_rate())
+		mixed_audio_signal.set_sample_type(reference_signal.get_sample_type(), equalize=False)
 
-		return AudioSignal(mixed_data, reference_signal.get_sample_rate())
+		return mixed_audio_signal
