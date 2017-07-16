@@ -91,7 +91,10 @@ class AudioSignal:
 class AudioMixer:
 
 	@staticmethod
-	def mix(audio_signals, mixing_weights=[1, 1]):
+	def mix(audio_signals, mixing_weights=None):
+		if mixing_weights is None:
+			mixing_weights = [1] * len(audio_signals)
+
 		reference_signal = audio_signals[0]
 
 		mixed_data = np.zeros(shape=reference_signal.get_data().shape, dtype=float)
