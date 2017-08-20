@@ -102,7 +102,7 @@ class AudioMixer:
 			if signal.get_format() != reference_signal.get_format():
 				raise Exception("mixing audio signals with different format is not supported")
 
-			mixed_data += (float(mixing_weights[i]) / sum(mixing_weights)) * signal.get_data()
+			mixed_data += (float(mixing_weights[i])) * signal.get_data()
 
 		mixed_audio_signal = AudioSignal(mixed_data, reference_signal.get_sample_rate())
 		mixed_audio_signal.set_sample_type(reference_signal.get_sample_type(), equalize=False)
