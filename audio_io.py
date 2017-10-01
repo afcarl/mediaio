@@ -73,10 +73,19 @@ class AudioSignal:
 		return AudioSignal(self._data[start_sample_index:end_sample_index], self._sample_rate)
 
 	def pad_with_zeros(self, new_length):
+		if self.get_number_of_samples() > new_length:
+			raise Exception("cannot zero-pad for shorter signal length")
+
 		new_shape = list(self._data.shape)
 		new_shape[0] = new_length
 
 		self._data.resize(new_shape)
+
+	def truncate(self, new_length):
+		if self.get_number_of_samples() < new_length:
+			raise Exception("cannot truncate for longer signal length")
+
+		self._data = self._data[:new_length, :]
 
 	@staticmethod
 	def concat(signals):
