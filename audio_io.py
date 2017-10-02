@@ -5,7 +5,7 @@ import numpy as np
 class AudioSignal:
 
 	def __init__(self, data, sample_rate):
-		self._data = data
+		self._data = np.copy(data)
 		self._sample_rate = sample_rate
 
 	@staticmethod
@@ -79,13 +79,14 @@ class AudioSignal:
 		new_shape = list(self._data.shape)
 		new_shape[0] = new_length
 
+		self._data = np.copy(self._data)
 		self._data.resize(new_shape)
 
 	def truncate(self, new_length):
 		if self.get_number_of_samples() < new_length:
 			raise Exception("cannot truncate for longer signal length")
 
-		self._data = self._data[:new_length, :]
+		self._data = self._data[:new_length]
 
 	@staticmethod
 	def concat(signals):
