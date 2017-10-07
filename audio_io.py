@@ -57,14 +57,17 @@ class AudioSignal:
 	def get_length_in_seconds(self):
 		return float(self.get_number_of_samples()) / self.get_sample_rate()
 
-	def set_sample_type(self, sample_type, equalize):
+	def set_sample_type(self, sample_type):
 		sample_type_info = np.iinfo(sample_type)
-
-		if equalize:
-			equalization_factor = float(sample_type_info.max) / np.abs(self._data).max()
-			self._data *= equalization_factor
-
 		self._data = self._data.clip(sample_type_info.min, sample_type_info.max).astype(sample_type)
+
+	def amplify(self, new_peak_value):
+		sample_type_info = np.iinfo(self.get_sample_type())
+		if new_peak_value > min(sample_type_info.max, np.abs(sample_type_info.min)):
+			raise Exception("new peak exceeds audio format max value")
+
+		factor = float(new_peak_value) / np.abs(self._data).max()
+		self._data = (self._data.astype(np.float64) * factor).astype(self.get_sample_type())
 
 	def split(self, n_slices):
 		return [AudioSignal(s, self._sample_rate) for s in np.split(self._data, n_slices)]
@@ -115,6 +118,6 @@ class AudioMixer:
 			mixed_data += (float(mixing_weights[i])) * signal.get_data()
 
 		mixed_audio_signal = AudioSignal(mixed_data, reference_signal.get_sample_rate())
-		mixed_audio_signal.set_sample_type(reference_signal.get_sample_type(), equalize=False)
+		mixed_audio_signal.set_sample_type(reference_signal.get_sample_type())
 
 		return mixed_audio_signal
