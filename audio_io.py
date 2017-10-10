@@ -61,12 +61,16 @@ class AudioSignal:
 		sample_type_info = np.iinfo(sample_type)
 		self._data = self._data.clip(sample_type_info.min, sample_type_info.max).astype(sample_type)
 
-	def amplify(self, new_peak_value):
-		sample_type_info = np.iinfo(self.get_sample_type())
-		if new_peak_value > min(sample_type_info.max, np.abs(sample_type_info.min)):
-			raise Exception("new peak exceeds audio format max value")
+	def amplify(self, reference_signal):
+		factor = float(np.abs(reference_signal.get_data()).mean()) / np.abs(self._data).mean()
 
-		factor = float(new_peak_value) / np.abs(self._data).max()
+		new_max_value = self._data.max() * factor
+		new_min_value = self._data.min() * factor
+
+		sample_type_info = np.iinfo(self.get_sample_type())
+		if new_max_value > sample_type_info.max or new_min_value < sample_type_info.min:
+			raise Exception("amplified signal exceeds audio format boundaries")
+
 		self._data = (self._data.astype(np.float64) * factor).astype(self.get_sample_type())
 
 	def split(self, n_slices):
