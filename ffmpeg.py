@@ -8,6 +8,7 @@ def downsample(input_audio_file_path, output_audio_file_path, sample_rate):
 
 
 def merge(input_video_file_path, input_audio_file_path, output_video_file_path):
-	subprocess.check_call(
-		["ffmpeg", "-i", input_video_file_path, "-i", input_audio_file_path, "-c:v copy -map 0:v:0 -map 1:a:0", output_video_file_path]
-	)
+	subprocess.check_call([
+		"ffmpeg", "-i", input_video_file_path, "-i", input_audio_file_path,
+		 "-c:v", "copy", "-map", "0:v:0", "-map", "1:a:0", output_video_file_path
+	])
