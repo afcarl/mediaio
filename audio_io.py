@@ -139,3 +139,17 @@ class AudioMixer:
 		mixed_audio_signal.set_sample_type(reference_signal.get_sample_type())
 
 		return mixed_audio_signal
+
+	@staticmethod
+	def snr_mix(signal, noise, snr_db):
+		s = signal.get_data()
+		n = noise.get_data()
+
+		if s.size != n.size:
+			raise Exception('signal and noise must have the same length')
+
+		eq = np.sqrt(np.mean(s ** 2) / np.mean(n ** 2))
+		factor = eq * (10 ** (-snr_db / 20))
+		mixed_signal = AudioSignal(s + n * factor, signal.get_sample_rate())
+		mixed_signal.set_sample_type(signal.get_sample_type())
+		return mixed_signal
