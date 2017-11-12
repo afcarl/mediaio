@@ -148,7 +148,7 @@ class AudioMixer:
 		if s.size != n.size:
 			raise Exception('signal and noise must have the same length')
 
-		eq = np.sqrt(np.mean(s ** 2) / np.mean(n ** 2))
+		eq = np.sqrt(np.var(s) / np.var(n))
 		factor = eq * (10 ** (-snr_db / 20))
 
 		return factor
