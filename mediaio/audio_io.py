@@ -13,7 +13,8 @@ class AudioSignal:
 		sample_rate, data = wavfile.read(wave_file_path)
 		return AudioSignal(data, sample_rate)
 
-	def save_to_wav_file(self, wave_file_path):
+	def save_to_wav_file(self, wave_file_path, sample_type=np.int16):
+		self.set_sample_type(sample_type)
 		wavfile.write(wave_file_path, self._sample_rate, self._data)
 
 	def get_data(self, channel_index=None):
@@ -128,17 +129,14 @@ class AudioMixer:
 
 		reference_signal = audio_signals[0]
 
-		mixed_data = np.zeros(shape=reference_signal.get_data().shape, dtype=float)
+		mixed_data = np.zeros(shape=reference_signal.get_data().shape, dtype=np.float64)
 		for i, signal in enumerate(audio_signals):
 			if signal.get_format() != reference_signal.get_format():
 				raise Exception("mixing audio signals with different format is not supported")
 
 			mixed_data += (float(mixing_weights[i])) * signal.get_data()
 
-		mixed_audio_signal = AudioSignal(mixed_data, reference_signal.get_sample_rate())
-		mixed_audio_signal.set_sample_type(reference_signal.get_sample_type())
-
-		return mixed_audio_signal
+		return AudioSignal(mixed_data, reference_signal.get_sample_rate())
 
 	@staticmethod
 	def snr_factor(signal, noise, snr_db):
