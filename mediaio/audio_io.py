@@ -51,8 +51,7 @@ class AudioSignal:
 	def get_format(self):
 		return dict(
 			n_channels=self.get_number_of_channels(),
-			sample_rate=self.get_sample_rate(),
-			sample_type=self.get_sample_type()
+			sample_rate=self.get_sample_rate()
 		)
 
 	def get_length_in_seconds(self):
