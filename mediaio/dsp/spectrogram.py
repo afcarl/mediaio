@@ -39,7 +39,7 @@ class MelConverter:
 		else:
 			return mel_spectrogram
 
-	def reconstruct_signal_from_mel_spectrogram(self, mel_spectrogram, log=True, phase=None, peak=None):
+	def reconstruct_signal_from_mel_spectrogram(self, mel_spectrogram, log=True, phase=None):
 		if log:
 			mel_spectrogram = librosa.db_to_power(mel_spectrogram)
 
@@ -52,12 +52,7 @@ class MelConverter:
 		else:
 			inverted_signal = griffin_lim(magnitude, self._N_FFT, self._HOP_LENGTH, n_iterations=10)
 
-		inverted_audio_signal = AudioSignal(inverted_signal, self._SAMPLE_RATE)
-
-		if peak is not None:
-			inverted_audio_signal.peak_denormalize(peak)
-
-		return inverted_audio_signal
+		return AudioSignal(inverted_signal, self._SAMPLE_RATE)
 
 	def get_n_mel_freqs(self):
 		return self._N_MEL_FREQS

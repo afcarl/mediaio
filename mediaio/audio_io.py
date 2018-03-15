@@ -74,6 +74,10 @@ class AudioSignal:
 
 		self._data = (self._data.astype(np.float64) * factor).astype(self.get_sample_type())
 
+	def amplify_by_factor(self, factor):
+		self._data = self._data.astype(np.float64)
+		self._data *= factor
+
 	def peak_normalize(self, peak=None):
 		self._data = self._data.astype(np.float64)
 
@@ -82,11 +86,6 @@ class AudioSignal:
 
 		self._data /= peak
 		return peak
-
-	def peak_denormalize(self, peak):
-		self._data = self._data.astype(np.float64)
-
-		self._data *= peak
 
 	def split(self, n_slices):
 		return [AudioSignal(s, self._sample_rate) for s in np.split(self._data, n_slices)]
