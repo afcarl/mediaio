@@ -5,5 +5,5 @@ setup(
 	version="1.0",
 	description="audio and video i/o utility",
 
-	packages=["mediaio", "mediaio/dsp"]
+	packages=["mediaio"]
 )
