@@ -46,6 +46,13 @@ class VideoFileReader:
     def get_frame_height(self):
         return self.get_frame_size()[1]
 
+    def get_format(self):
+        return dict(
+            frame_rate=self.get_frame_rate(),
+            frame_width=self.get_frame_width(),
+            frame_height=self.get_frame_height()
+        )
+
     def __enter__(self):
         return self
 
